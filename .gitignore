@@ -38,3 +38,4 @@ docker-compose.override.yml
 
 # Local API data
 backend/storage/app/contacts.json
+frontend.zip
