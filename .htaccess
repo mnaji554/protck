@@ -1,0 +1,25 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Laravel API requests
+    RewriteRule ^api/(.*)$ backend/public/index.php [L,QSA]
+    RewriteRule ^api$ backend/public/index.php [L,QSA]
+
+    # Laravel storage files
+    RewriteRule ^storage/(.*)$ backend/public/storage/$1 [L,QSA]
+
+    # React build static assets
+    RewriteRule ^static/(.*)$ frontend/build/static/$1 [L,QSA]
+    RewriteRule ^asset-manifest.json$ frontend/build/asset-manifest.json [L]
+    RewriteRule ^manifest.json$ frontend/build/manifest.json [L]
+    RewriteRule ^favicon.ico$ frontend/build/favicon.ico [L]
+    RewriteRule ^robots.txt$ frontend/build/robots.txt [L]
+
+    # Serve existing files/directories normally
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Fallback to React SPA entry point
+    RewriteRule ^ frontend/build/index.html [L]
+</IfModule>
