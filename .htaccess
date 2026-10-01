@@ -15,6 +15,9 @@
     RewriteRule ^favicon.ico$ frontend/build/favicon.ico [L]
     RewriteRule ^robots.txt$ frontend/build/robots.txt [L]
 
+    # The source directory has no index; serve the React app for /frontend.
+    RewriteRule ^frontend/?$ frontend/build/index.html [L]
+
     # Serve existing files/directories normally
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
