@@ -6,6 +6,8 @@
     <meta name="description" content="{{ __('site.hero.description') }}">
     <title>{{ __('site.title') }}</title>
     <link rel="stylesheet" href="{{ asset('css/site.css') }}">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1633010232947275"
+     crossorigin="anonymous"></script>
 </head>
 <body>
     <header class="site-header">
