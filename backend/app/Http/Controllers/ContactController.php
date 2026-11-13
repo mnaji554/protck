@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Contact;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
 {
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
+        if (! $request->expectsJson()) {
+            app()->setLocale($request->session()->get('locale', 'ar'));
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
@@ -19,6 +25,10 @@ class ContactController extends Controller
 
         Contact::create([...$validated, 'status' => 'new']);
 
-        return response()->json(['message' => 'Your message has been received.'], 201);
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Your message has been received.'], 201);
+        }
+
+        return redirect()->to(route('home').'#contact')->with('status', __('site.contact.success'));
     }
 }

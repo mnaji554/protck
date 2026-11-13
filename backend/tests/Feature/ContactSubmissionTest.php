@@ -44,4 +44,21 @@ class ContactSubmissionTest extends TestCase
 
         $this->assertSame(0, Contact::count());
     }
+
+    public function test_visitor_can_submit_a_contact_message_from_the_site(): void
+    {
+        $this->post('/contact', [
+            'name' => 'A Client',
+            'email' => 'client@example.com',
+            'subject' => 'Project inquiry',
+            'message' => 'I would like to discuss a project.',
+        ])->assertRedirect(route('home').'#contact')
+            ->assertSessionHas('status', 'شكرًا لك! سنتواصل معك قريبًا.');
+
+        $this->assertDatabaseHas('contacts', [
+            'email' => 'client@example.com',
+            'subject' => 'Project inquiry',
+            'status' => 'new',
+        ]);
+    }
 }

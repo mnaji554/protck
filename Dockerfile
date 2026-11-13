@@ -1,25 +1,22 @@
-# Build stage
-FROM node:18-alpine as builder
+FROM php:8.4-cli-alpine
 
-WORKDIR /app
+RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS icu-dev libzip-dev sqlite-dev \
+    && docker-php-ext-install intl pdo_sqlite zip \
+    && apk del .build-deps
 
-COPY package*.json ./
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN npm ci
+WORKDIR /var/www/html
+COPY backend/ ./
 
-COPY . .
-
-RUN npm run build
-
-# Production stage
-FROM node:18-alpine
-
-WORKDIR /app
-
-RUN npm install -g serve
-
-COPY --from=builder /app/build ./build
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+    && touch database/database.sqlite \
+    && php artisan migrate --force \
+    && chown -R www-data:www-data storage bootstrap/cache database
 
 EXPOSE 3000
 
-CMD ["serve", "-s", "build", "-l", "3000"]
+USER www-data
+
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=3000"]
